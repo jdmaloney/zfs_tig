@@ -20,3 +20,8 @@ while IFS= read -r line; do
 done < <(/usr/sbin/zfs projectspace -Hp ${f} | awk '{print $2" "$3" "$4" "$5" "$6}')
 
 done
+
+while IFS= read -r line; do
+	IFS=" " read -r dataset bytes_used bytes_avail bytes_referenced mount_point <<< "${line}"
+	echo "zfs_quota,fs=${dataset},mount_point=${mount_point} bytes_used=${bytes_used},bytes_avail=${bytes_avail},bytes_reference=${bytes_referenced}"
+done < <(/usr/sbin/zfs list -Hp | awk '{print $1" "$2" "$3" "$4" "$5}')
