@@ -16,7 +16,7 @@ do
 				echo "zfshealth,pool=${p},device=${zname},type=vdev,vdev_type=${vdev_type},state=${state} readerr=$readerr,writeerr=${writeerr},checksum=${chksmerr}";;
 			special|logs|cache)
 				vdev_type=${zname};;
-				*)
+			*)
 				echo "zfshealth,pool=${p},device=${zname},type=drive,vdev_type=${vdev_type},state=${state} readerr=$readerr,writeerr=${writeerr},checksum=${chksmerr}"
 		esac
 	done < "${tfile}"
