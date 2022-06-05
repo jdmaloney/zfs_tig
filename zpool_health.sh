@@ -11,16 +11,18 @@ do
 		IFS=" " read -r zname state readerr writeerr chksmerr <<< "${l}"
 		case ${zname} in
 			${p})
-				echo "zfshealth,pool=${p},device=${zname},type=pool,vdev_type=none,state=${state} readerr=$readerr,writeerr=${writeerr},checksum=${chksmerr}";;
+				echo "zfshealth,pool=${p},device=${zname},type=pool,vdev_type=none,state=${state} readerr=${readerr},writeerr=${writeerr},checksum=${chksmerr}";;
 			raidz*|mirror*|draid*)
-				echo "zfshealth,pool=${p},device=${zname},type=vdev,vdev_type=${vdev_type},state=${state} readerr=$readerr,writeerr=${writeerr},checksum=${chksmerr}";;
-			special|logs|cache)
+				echo "zfshealth,pool=${p},device=${zname},type=vdev,vdev_type=${vdev_type},state=${state} readerr=${readerr},writeerr=${writeerr},checksum=${chksmerr}";;
+			special|logs|cache|spares)
 				vdev_type=${zname};;
-			spares)
-				echo "zfshealth,pool=${p},device=${zname},type=drive,vdev_type=spare,state=${state} readerr=0,writeerr=0,checksum=0"
 			*)
-				echo "zfshealth,pool=${p},device=${zname},type=drive,vdev_type=${vdev_type},state=${state} readerr=$readerr,writeerr=${writeerr},checksum=${chksmerr}"
-		esac
+				if [ "${vdev_type}" == "spares" ]; then
+					echo "zfshealth,pool=${p},device=${zname},type=drive,vdev_type=${vdev_type},state=${state} readerr=0,writeerr=0,checksum=0"
+				else
+					echo "zfshealth,pool=${p},device=${zname},type=drive,vdev_type=${vdev_type},state=${state} readerr=${readerr},writeerr=${writeerr},checksum=${chksmerr}"
+				fi
+			esac
 	done < "${tfile}"
 done
 rm -rf ${tfile}
